@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
 import { Entypo, Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
@@ -9,9 +9,18 @@ type HeaderProps = {
   userName?: string;
 };
 
+// Function to get default avatar URL that works across platforms
+const getDefaultAvatarUrl = () => {
+  if (Platform.OS === 'web') {
+    return require("../../assets/images/default-avatar.jpg");
+  } else {
+    return Image.resolveAssetSource(require("../../assets/images/default-avatar.jpg")).uri;
+  }
+};
+
 export default function Header({ userName = "" }: HeaderProps) {
   const router = useRouter();
-  const [avatarUrl, setAvatarUrl] = useState<string>((globalThis as any).__AVATAR_URL__ || Image.resolveAssetSource(require("../../assets/images/default-avatar.jpg")).uri);
+  const [avatarUrl, setAvatarUrl] = useState<string | any>((globalThis as any).__AVATAR_URL__ || getDefaultAvatarUrl());
 
   useFocusEffect(
     useCallback(() => {
@@ -54,7 +63,16 @@ export default function Header({ userName = "" }: HeaderProps) {
             <Ionicons name="notifications-outline" size={22} color="#1f2937" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push("../screens/Profile")}>
-            <Image source={{ uri: avatarUrl }} style={styles.avatar} />
+            <Image 
+              source={
+                typeof avatarUrl === 'string' && avatarUrl.startsWith('http') 
+                  ? { uri: avatarUrl } 
+                  : typeof avatarUrl === 'object' 
+                    ? avatarUrl 
+                    : { uri: avatarUrl }
+              } 
+              style={styles.avatar} 
+            />
           </TouchableOpacity>
         </View>
       </View>

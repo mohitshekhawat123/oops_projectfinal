@@ -176,7 +176,6 @@ export default function Settings() {
   const router = useRouter();
 
   const sections = [
-    { title: "Account Settings", route: "./settings/AccountSettings" },
     { title: "Privacy Settings", route: "./settings/PrivacySettings" },
     { title: "Notification Settings", route: "./settings/NotificationSettings" },
     { title: "Help & Support", route: "./settings/HelpSupport" },
